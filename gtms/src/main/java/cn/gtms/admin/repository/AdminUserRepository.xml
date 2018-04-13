@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gtms.admin.repository.AdminUserRepository">
+
+
+	<resultMap id="adminUserMap" type="cn.gtms.admin.entity.AdminUser">
+		<id column="user_id" property="userId" />		<!-- 用户id -->
+		<result column="account" property="account" />		<!-- 用户账号 -->
+		<result column="password" property="password" />		<!-- 用户密码 -->
+		<result column="user_name" property="userName" />		<!-- 用户名 -->
+		<result column="gender" property="gender" />		<!-- 性别 -->
+		<result column="email" property="email" />		<!-- 邮箱 -->
+		<result column="phone_number" property="phoneNumber" />		<!-- 电话号码 -->
+		<result column="college" property="college" />		<!-- 学院 -->
+		<result column="major" property="major" />		<!-- 专业 -->
+		<result column="grade" property="grade" />		<!-- 年级 -->
+		<result column="user_class" property="userClass" />		<!-- 班级 -->
+		<result column="role" property="role" />		<!-- 角色 -->
+		<result column="utc_create" property="utcCreate" />		<!-- 创建时间 -->
+		<result column="utc_update" property="utcUpdate" />		<!-- 更新时间 -->
+		<result column="create_by" property="createBy" />		<!-- 创建人 -->
+		<result column="update_by" property="updateBy" />		<!-- 更新人 -->
+		<result column="note" property="note" />		<!-- 备注 -->
+		<result column="status" property="status" />		<!-- 状态 -->
+	</resultMap>
+	<sql id="allColumns">
+		user_id,account,password,user_name,gender,email,phone_number,college,major,grade,user_class,
+		role,utc_create,utc_update,create_by,update_by,note,status
+	</sql>
+	<sql id="columns">
+		account,password,user_name,gender,email,phone_number,college,major,grade,user_class,
+		role,utc_create,utc_update,create_by,update_by,note,status
+	</sql>
+	<sql id="table">
+		gtms_admin_user 
+	</sql>
+	<sql id="condition">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="account != null">
+				AND account = #{account}
+			</if>
+			<if test="password != null">
+				AND password = #{password}
+			</if>
+			<if test="userName != null">
+				AND user_name = #{userName}
+			</if>
+			<if test="gender != null">
+				AND gender = #{gender}
+			</if>
+			<if test="email != null">
+				AND email = #{email}
+			</if>
+			<if test="phoneNumber != null">
+				AND phone_number = #{phoneNumber}
+			</if>
+			<if test="college != null">
+				AND college = #{college}
+			</if>
+			<if test="major != null">
+				AND major = #{major}
+			</if>
+			<if test="grade != null">
+				AND grade = #{grade}
+			</if>
+			<if test="userClass != null">
+				AND user_class = #{userClass}
+			</if>
+			<if test="role != null">
+				AND role = #{role}
+			</if>
+			<if test="utcCreate != null">
+				AND utc_create = #{utcCreate}
+			</if>
+			<if test="utcUpdate != null">
+				AND utc_update = #{utcUpdate}
+			</if>
+			<if test="createBy != null">
+				AND create_by = #{createBy}
+			</if>
+			<if test="updateBy != null">
+				AND update_by = #{updateBy}
+			</if>
+			<if test="note != null">
+				AND note = #{note}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+		</trim>
+	</sql>
+	<sql id="conditionPK">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND user_id = #{userId}
+		</trim>
+	</sql>
+	<sql id="moreConditionPK">
+		WHERE user_id in
+		<trim prefix="(" suffix=")">
+			<foreach collection="ids" item="item" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminUser" databaseId="oracle">
+		insert into
+		<include refid="table" />
+		(<include refid="allColumns" />)
+		values
+		(#{userId},#{account,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR},#{gender,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},#{phoneNumber,jdbcType=VARCHAR},#{college,jdbcType=VARCHAR},#{major,jdbcType=VARCHAR},
+		#{grade,jdbcType=NUMERIC},#{userClass,jdbcType=NUMERIC},#{role,jdbcType=NUMERIC},#{utcCreate,jdbcType=TIMESTAMP},
+		#{utcUpdate,jdbcType=TIMESTAMP},#{createBy,jdbcType=NUMERIC},#{updateBy,jdbcType=NUMERIC},#{note,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR}
+		)
+		<selectKey keyProperty="userId" order="BEFORE" resultType="java.lang.Long">
+			select
+			seq_gtms_admin_user_id.nextval
+			from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminUser" useGeneratedKeys="true"  keyProperty="userId" >
+		insert into
+		<include refid="table" />
+		(<include refid="columns" />)
+		values
+		(#{account,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR},#{gender,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},#{phoneNumber,jdbcType=VARCHAR},#{college,jdbcType=VARCHAR},#{major,jdbcType=VARCHAR},
+		#{grade,jdbcType=NUMERIC},#{userClass,jdbcType=NUMERIC},#{role,jdbcType=NUMERIC},#{utcCreate,jdbcType=TIMESTAMP},
+		#{utcUpdate,jdbcType=TIMESTAMP},#{createBy,jdbcType=NUMERIC},#{updateBy,jdbcType=NUMERIC},#{note,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="saveList" parameterType="java.util.List">
+		insert into
+		<include refid="table" />
+		(
+		<include refid="columns" />
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">	
+		(#{item.account,jdbcType=VARCHAR},#{item.password,jdbcType=VARCHAR},#{item.userName,jdbcType=VARCHAR},#{item.gender,jdbcType=VARCHAR},
+		#{item.email,jdbcType=VARCHAR},#{item.phoneNumber,jdbcType=VARCHAR},#{item.college,jdbcType=VARCHAR},#{item.major,jdbcType=VARCHAR},
+		#{item.grade,jdbcType=NUMERIC},#{item.userClass,jdbcType=NUMERIC},#{item.role,jdbcType=NUMERIC},#{item.utcCreate,jdbcType=TIMESTAMP},
+		#{item.utcUpdate,jdbcType=TIMESTAMP},#{item.createBy,jdbcType=NUMERIC},#{item.updateBy,jdbcType=NUMERIC},#{item.note,jdbcType=VARCHAR},
+		#{item.status,jdbcType=VARCHAR}
+		)
+		</foreach>
+	</insert>
+	
+	
+	<update id="update" parameterType="cn.gtms.admin.entity.AdminUser">
+		update
+		<include refid="table" />
+		<set>
+			<if test="account != null">
+				account = #{account},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName},
+			</if>
+			<if test="gender != null">
+				gender = #{gender},
+			</if>
+			<if test="email != null">
+				email = #{email},
+			</if>
+			<if test="phoneNumber != null">
+				phone_number = #{phoneNumber},
+			</if>
+			<if test="college != null">
+				college = #{college},
+			</if>
+			<if test="major != null">
+				major = #{major},
+			</if>
+			<if test="grade != null">
+				grade = #{grade},
+			</if>
+			<if test="userClass != null">
+				user_class = #{userClass},
+			</if>
+			<if test="role != null">
+				role = #{role},
+			</if>
+			<if test="utcCreate != null">
+				utc_create = #{utcCreate},
+			</if>
+			<if test="utcUpdate != null">
+				utc_update = #{utcUpdate},
+			</if>
+			<if test="createBy != null">
+				create_by = #{createBy},
+			</if>
+			<if test="updateBy != null">
+				update_by = #{updateBy},
+			</if>
+			<if test="note != null">
+				note = #{note},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateAll" parameterType="cn.gtms.admin.entity.AdminUser">
+		update
+		<include refid="table" />
+		<set>
+			account = #{account},
+			password = #{password},
+			user_name = #{userName},
+			gender = #{gender},
+			email = #{email},
+			phone_number = #{phoneNumber},
+			college = #{college},
+			major = #{major},
+			grade = #{grade},
+			user_class = #{userClass},
+			role = #{role},
+			utc_create = #{utcCreate},
+			utc_update = #{utcUpdate},
+			create_by = #{createBy},
+			update_by = #{updateBy},
+			note = #{note},
+			status = #{status}
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+         update
+         	<include refid="table" />
+			<set>
+				<if test="item.account != null">
+					account = #{item.account},
+				</if>
+				<if test="item.password != null">
+					password = #{item.password},
+				</if>
+				<if test="item.userName != null">
+					user_name = #{item.userName},
+				</if>
+				<if test="item.gender != null">
+					gender = #{item.gender},
+				</if>
+				<if test="item.email != null">
+					email = #{item.email},
+				</if>
+				<if test="item.phoneNumber != null">
+					phone_number = #{item.phoneNumber},
+				</if>
+				<if test="item.college != null">
+					college = #{item.college},
+				</if>
+				<if test="item.major != null">
+					major = #{item.major},
+				</if>
+				<if test="item.grade != null">
+					grade = #{item.grade},
+				</if>
+				<if test="item.userClass != null">
+					user_class = #{item.userClass},
+				</if>
+				<if test="item.role != null">
+					role = #{item.role},
+				</if>
+				<if test="item.utcCreate != null">
+					utc_create = #{item.utcCreate},
+				</if>
+				<if test="item.utcUpdate != null">
+					utc_update = #{item.utcUpdate},
+				</if>
+				<if test="item.createBy != null">
+					create_by = #{item.createBy},
+				</if>
+				<if test="item.updateBy != null">
+					update_by = #{item.updateBy},
+				</if>
+				<if test="item.note != null">
+					note = #{item.note},
+				</if>
+				<if test="item.status != null">
+					status = #{item.status}
+				</if>
+			</set>
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND user_id = #{item.userId}
+			</trim>
+         </foreach>  
+	</update>
+	
+	
+	<delete id="remove" parameterType="cn.gtms.admin.entity.AdminUser">
+		delete from
+		<include refid="table" />
+		<include refid="condition" />
+	</delete>
+	<delete id="removeAll">
+		delete from
+		<include refid="table" />
+	</delete>
+	
+	<delete id="delete" parameterType="Long">
+		delete from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</delete>
+	<delete id="deleteByIds" parameterType="list">
+		delete from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</delete>
+	<select id="get" resultMap="adminUserMap" parameterType="Long">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="load" resultMap="adminUserMap" parameterType="cn.gtms.admin.entity.AdminUser">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="getOne" resultMap="adminUserMap"
+		parameterType="cn.gtms.admin.entity.AdminUser">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+	<select id="count" resultType="java.lang.Integer"
+		parameterType="cn.gtms.admin.entity.AdminUser">
+		select
+		count(1)
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="countAll" resultType="java.lang.Integer">
+		select
+		count(1)
+		from
+		<include refid="table" />
+	</select>
+
+	<select id="exists" parameterType="Long" resultType="java.lang.Boolean">
+		select
+		1
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+
+	<select id="findAll" resultMap="adminUserMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+	</select>
+	<select id="find" resultMap="adminUserMap" parameterType="cn.gtms.admin.entity.AdminUser">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="adminUserMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+
+	<select id="findByList" parameterType="java.util.List"
+		resultMap="adminUserMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</select>
+	
+	<select id="findByCriteria" parameterType="java.util.Map" resultMap="adminUserMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	<select id="queryByCriteria" parameterType="java.util.Map" resultMap="adminUserMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="queryByMap" parameterType="java.util.Map" resultMap="adminUserMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="query" resultMap="adminUserMap" parameterType="cn.gtms.admin.entity.AdminUser">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+</mapper>

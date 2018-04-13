@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gtms.admin.repository.AdminDocumentRepository">
+
+
+	<resultMap id="adminDocumentMap" type="cn.gtms.admin.entity.AdminDocument">
+		<id column="document_id" property="documentId" />		<!-- 文件id -->
+		<result column="document_name" property="documentName" />		<!-- 文件名 -->
+		<result column="document_url" property="documentUrl" />		<!-- 文件路径 -->
+		<result column="document_type" property="documentType" />		<!-- 文件类型 -->
+		<result column="upload_by" property="uploadBy" />		<!-- 上传人 -->
+		<result column="utc_create" property="utcCreate" />		<!-- 创建时间 -->
+		<result column="utc_update" property="utcUpdate" />		<!-- 更新时间 -->
+		<result column="download_times" property="downloadTimes" />		<!-- 下载次数 -->
+		<result column="belong_to" property="belongTo" />		<!-- 所属人 -->
+		<result column="relate_to" property="relateTo" />		<!-- 关系人 -->
+		<result column="status" property="status" />		<!-- 状态 -->
+	</resultMap>
+	<sql id="allColumns">
+		document_id,document_name,document_url,document_type,upload_by,utc_create,utc_update,download_times,belong_to,relate_to,status
+	</sql>
+	<sql id="columns">
+		document_name,document_url,document_type,upload_by,utc_create,utc_update,download_times,belong_to,relate_to,status
+	</sql>
+	<sql id="table">
+		gtms_admin_document 
+	</sql>
+	<sql id="condition">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="documentId != null">
+				AND document_id = #{documentId}
+			</if>
+			<if test="documentName != null">
+				AND document_name = #{documentName}
+			</if>
+			<if test="documentUrl != null">
+				AND document_url = #{documentUrl}
+			</if>
+			<if test="documentType != null">
+				AND document_type = #{documentType}
+			</if>
+			<if test="uploadBy != null">
+				AND upload_by = #{uploadBy}
+			</if>
+			<if test="utcCreate != null">
+				AND utc_create = #{utcCreate}
+			</if>
+			<if test="utcUpdate != null">
+				AND utc_update = #{utcUpdate}
+			</if>
+			<if test="downloadTimes != null">
+				AND download_times = #{downloadTimes}
+			</if>
+			<if test="belongTo != null">
+				AND belong_to = #{belongTo}
+			</if>
+			<if test="relateTo != null">
+				AND relate_to = #{relateTo}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+		</trim>
+	</sql>
+	<sql id="conditionPK">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND document_id = #{documentId}
+		</trim>
+	</sql>
+	<sql id="moreConditionPK">
+		WHERE document_id in
+		<trim prefix="(" suffix=")">
+			<foreach collection="ids" item="item" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminDocument" databaseId="oracle">
+		insert into
+		<include refid="table" />
+		(<include refid="allColumns" />)
+		values
+		(#{documentId},#{documentName,jdbcType=VARCHAR},#{documentUrl,jdbcType=VARCHAR},#{documentType,jdbcType=VARCHAR},#{uploadBy,jdbcType=NUMERIC},
+		#{utcCreate,jdbcType=TIMESTAMP},#{utcUpdate,jdbcType=TIMESTAMP},#{downloadTimes,jdbcType=NUMERIC},#{belongTo,jdbcType=NUMERIC},
+		#{relateTo,jdbcType=NUMERIC},#{status,jdbcType=VARCHAR}
+		)
+		<selectKey keyProperty="documentId" order="BEFORE" resultType="java.lang.Long">
+			select
+			seq_gtms_admin_document_id.nextval
+			from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminDocument" useGeneratedKeys="true"  keyProperty="documentId" >
+		insert into
+		<include refid="table" />
+		(<include refid="columns" />)
+		values
+		(#{documentName,jdbcType=VARCHAR},#{documentUrl,jdbcType=VARCHAR},#{documentType,jdbcType=VARCHAR},#{uploadBy,jdbcType=NUMERIC},
+		#{utcCreate,jdbcType=TIMESTAMP},#{utcUpdate,jdbcType=TIMESTAMP},#{downloadTimes,jdbcType=NUMERIC},#{belongTo,jdbcType=NUMERIC},
+		#{relateTo,jdbcType=NUMERIC},#{status,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="saveList" parameterType="java.util.List">
+		insert into
+		<include refid="table" />
+		(
+		<include refid="columns" />
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">	
+		(#{item.documentName,jdbcType=VARCHAR},#{item.documentUrl,jdbcType=VARCHAR},#{item.documentType,jdbcType=VARCHAR},#{item.uploadBy,jdbcType=NUMERIC},
+		#{item.utcCreate,jdbcType=TIMESTAMP},#{item.utcUpdate,jdbcType=TIMESTAMP},#{item.downloadTimes,jdbcType=NUMERIC},#{item.belongTo,jdbcType=NUMERIC},
+		#{item.relateTo,jdbcType=NUMERIC},#{item.status,jdbcType=VARCHAR}
+		)
+		</foreach>
+	</insert>
+	
+	
+	<update id="update" parameterType="cn.gtms.admin.entity.AdminDocument">
+		update
+		<include refid="table" />
+		<set>
+			<if test="documentName != null">
+				document_name = #{documentName},
+			</if>
+			<if test="documentUrl != null">
+				document_url = #{documentUrl},
+			</if>
+			<if test="documentType != null">
+				document_type = #{documentType},
+			</if>
+			<if test="uploadBy != null">
+				upload_by = #{uploadBy},
+			</if>
+			<if test="utcCreate != null">
+				utc_create = #{utcCreate},
+			</if>
+			<if test="utcUpdate != null">
+				utc_update = #{utcUpdate},
+			</if>
+			<if test="downloadTimes != null">
+				download_times = #{downloadTimes},
+			</if>
+			<if test="belongTo != null">
+				belong_to = #{belongTo},
+			</if>
+			<if test="relateTo != null">
+				relate_to = #{relateTo},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateAll" parameterType="cn.gtms.admin.entity.AdminDocument">
+		update
+		<include refid="table" />
+		<set>
+			document_name = #{documentName},
+			document_url = #{documentUrl},
+			document_type = #{documentType},
+			upload_by = #{uploadBy},
+			utc_create = #{utcCreate},
+			utc_update = #{utcUpdate},
+			download_times = #{downloadTimes},
+			belong_to = #{belongTo},
+			relate_to = #{relateTo},
+			status = #{status}
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+         update
+         	<include refid="table" />
+			<set>
+				<if test="item.documentName != null">
+					document_name = #{item.documentName},
+				</if>
+				<if test="item.documentUrl != null">
+					document_url = #{item.documentUrl},
+				</if>
+				<if test="item.documentType != null">
+					document_type = #{item.documentType},
+				</if>
+				<if test="item.uploadBy != null">
+					upload_by = #{item.uploadBy},
+				</if>
+				<if test="item.utcCreate != null">
+					utc_create = #{item.utcCreate},
+				</if>
+				<if test="item.utcUpdate != null">
+					utc_update = #{item.utcUpdate},
+				</if>
+				<if test="item.downloadTimes != null">
+					download_times = #{item.downloadTimes},
+				</if>
+				<if test="item.belongTo != null">
+					belong_to = #{item.belongTo},
+				</if>
+				<if test="item.relateTo != null">
+					relate_to = #{item.relateTo},
+				</if>
+				<if test="item.status != null">
+					status = #{item.status}
+				</if>
+			</set>
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND document_id = #{item.documentId}
+			</trim>
+         </foreach>  
+	</update>
+	
+	
+	<delete id="remove" parameterType="cn.gtms.admin.entity.AdminDocument">
+		delete from
+		<include refid="table" />
+		<include refid="condition" />
+	</delete>
+	<delete id="removeAll">
+		delete from
+		<include refid="table" />
+	</delete>
+	
+	<delete id="delete" parameterType="Long">
+		delete from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</delete>
+	<delete id="deleteByIds" parameterType="list">
+		delete from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</delete>
+	<select id="get" resultMap="adminDocumentMap" parameterType="Long">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="load" resultMap="adminDocumentMap" parameterType="cn.gtms.admin.entity.AdminDocument">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="getOne" resultMap="adminDocumentMap"
+		parameterType="cn.gtms.admin.entity.AdminDocument">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+	<select id="count" resultType="java.lang.Integer"
+		parameterType="cn.gtms.admin.entity.AdminDocument">
+		select
+		count(1)
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="countAll" resultType="java.lang.Integer">
+		select
+		count(1)
+		from
+		<include refid="table" />
+	</select>
+
+	<select id="exists" parameterType="Long" resultType="java.lang.Boolean">
+		select
+		1
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+
+	<select id="findAll" resultMap="adminDocumentMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+	</select>
+	<select id="find" resultMap="adminDocumentMap" parameterType="cn.gtms.admin.entity.AdminDocument">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="adminDocumentMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+
+	<select id="findByList" parameterType="java.util.List"
+		resultMap="adminDocumentMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</select>
+	
+	<select id="findByCriteria" parameterType="java.util.Map" resultMap="adminDocumentMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	<select id="queryByCriteria" parameterType="java.util.Map" resultMap="adminDocumentMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="queryByMap" parameterType="java.util.Map" resultMap="adminDocumentMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="query" resultMap="adminDocumentMap" parameterType="cn.gtms.admin.entity.AdminDocument">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+</mapper>

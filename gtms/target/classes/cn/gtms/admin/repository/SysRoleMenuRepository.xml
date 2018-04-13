@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gtms.admin.repository.SysRoleMenuRepository">
+
+
+	<resultMap id="sysRoleMenuMap" type="cn.gtms.admin.entity.SysRoleMenu">
+		<id column="role_menu_id" property="roleMenuId" />		<!-- 角色菜单id -->
+		<result column="role_id" property="roleId" />		<!-- 角色id -->
+		<result column="menu_icon" property="menuIcon" />		<!-- 菜单图标 -->
+		<result column="menu_name" property="menuName" />		<!-- 菜单名称 -->
+		<result column="menu_url" property="menuUrl" />		<!-- 菜单url -->
+		<result column="menu_level" property="menuLevel" />		<!-- 菜单层级 -->
+		<result column="parent_id" property="parentId" />		<!-- 父菜单id -->
+		<result column="sort" property="sort" />		<!-- 顺序 -->
+		<result column="utc_create" property="utcCreate" />		<!-- 创建时间 -->
+		<result column="utc_update" property="utcUpdate" />		<!-- 更新时间 -->
+		<result column="status" property="status" />		<!-- 状态 -->
+	</resultMap>
+	<sql id="allColumns">
+		role_menu_id,role_id,menu_icon,menu_name,menu_url,menu_level,parent_id,sort,utc_create,utc_update,status
+	</sql>
+	<sql id="columns">
+		role_id,menu_icon,menu_name,menu_url,menu_level,parent_id,sort,utc_create,utc_update,status
+	</sql>
+	<sql id="table">
+		admin_sys_role_menu 
+	</sql>
+	<sql id="condition">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="roleMenuId != null">
+				AND role_menu_id = #{roleMenuId}
+			</if>
+			<if test="roleId != null">
+				AND role_id = #{roleId}
+			</if>
+			<if test="menuIcon != null">
+				AND menu_icon = #{menuIcon}
+			</if>
+			<if test="menuName != null">
+				AND menu_name = #{menuName}
+			</if>
+			<if test="menuUrl != null">
+				AND menu_url = #{menuUrl}
+			</if>
+			<if test="menuLevel != null">
+				AND menu_level = #{menuLevel}
+			</if>
+			<if test="parentId != null">
+				AND parent_id = #{parentId}
+			</if>
+			<if test="sort != null">
+				AND sort = #{sort}
+			</if>
+			<if test="utcCreate != null">
+				AND utc_create = #{utcCreate}
+			</if>
+			<if test="utcUpdate != null">
+				AND utc_update = #{utcUpdate}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+		</trim>
+	</sql>
+	<sql id="conditionPK">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND role_menu_id = #{roleMenuId}
+		</trim>
+	</sql>
+	<sql id="moreConditionPK">
+		WHERE role_menu_id in
+		<trim prefix="(" suffix=")">
+			<foreach collection="ids" item="item" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.SysRoleMenu" databaseId="oracle">
+		insert into
+		<include refid="table" />
+		(<include refid="allColumns" />)
+		values
+		(#{roleMenuId},#{roleId,jdbcType=NUMERIC},#{menuIcon,jdbcType=VARCHAR},#{menuName,jdbcType=VARCHAR},#{menuUrl,jdbcType=VARCHAR},
+		#{menuLevel,jdbcType=VARCHAR},#{parentId,jdbcType=NUMERIC},#{sort,jdbcType=NUMERIC},#{utcCreate,jdbcType=TIMESTAMP},
+		#{utcUpdate,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR}
+		)
+		<selectKey keyProperty="roleMenuId" order="BEFORE" resultType="java.lang.Long">
+			select
+			seq_admin_sys_role_menu_id.nextval
+			from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.SysRoleMenu" useGeneratedKeys="true"  keyProperty="roleMenuId" >
+		insert into
+		<include refid="table" />
+		(<include refid="columns" />)
+		values
+		(#{roleId,jdbcType=NUMERIC},#{menuIcon,jdbcType=VARCHAR},#{menuName,jdbcType=VARCHAR},#{menuUrl,jdbcType=VARCHAR},
+		#{menuLevel,jdbcType=VARCHAR},#{parentId,jdbcType=NUMERIC},#{sort,jdbcType=NUMERIC},#{utcCreate,jdbcType=TIMESTAMP},
+		#{utcUpdate,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="saveList" parameterType="java.util.List">
+		insert into
+		<include refid="table" />
+		(
+		<include refid="columns" />
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">	
+		(#{item.roleId,jdbcType=NUMERIC},#{item.menuIcon,jdbcType=VARCHAR},#{item.menuName,jdbcType=VARCHAR},#{item.menuUrl,jdbcType=VARCHAR},
+		#{item.menuLevel,jdbcType=VARCHAR},#{item.parentId,jdbcType=NUMERIC},#{item.sort,jdbcType=NUMERIC},#{item.utcCreate,jdbcType=TIMESTAMP},
+		#{item.utcUpdate,jdbcType=TIMESTAMP},#{item.status,jdbcType=VARCHAR}
+		)
+		</foreach>
+	</insert>
+	
+	
+	<update id="update" parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		update
+		<include refid="table" />
+		<set>
+			<if test="roleId != null">
+				role_id = #{roleId},
+			</if>
+			<if test="menuIcon != null">
+				menu_icon = #{menuIcon},
+			</if>
+			<if test="menuName != null">
+				menu_name = #{menuName},
+			</if>
+			<if test="menuUrl != null">
+				menu_url = #{menuUrl},
+			</if>
+			<if test="menuLevel != null">
+				menu_level = #{menuLevel},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId},
+			</if>
+			<if test="sort != null">
+				sort = #{sort},
+			</if>
+			<if test="utcCreate != null">
+				utc_create = #{utcCreate},
+			</if>
+			<if test="utcUpdate != null">
+				utc_update = #{utcUpdate},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateAll" parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		update
+		<include refid="table" />
+		<set>
+			role_id = #{roleId},
+			menu_icon = #{menuIcon},
+			menu_name = #{menuName},
+			menu_url = #{menuUrl},
+			menu_level = #{menuLevel},
+			parent_id = #{parentId},
+			sort = #{sort},
+			utc_create = #{utcCreate},
+			utc_update = #{utcUpdate},
+			status = #{status}
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+         update
+         	<include refid="table" />
+			<set>
+				<if test="item.roleId != null">
+					role_id = #{item.roleId},
+				</if>
+				<if test="item.menuIcon != null">
+					menu_icon = #{item.menuIcon},
+				</if>
+				<if test="item.menuName != null">
+					menu_name = #{item.menuName},
+				</if>
+				<if test="item.menuUrl != null">
+					menu_url = #{item.menuUrl},
+				</if>
+				<if test="item.menuLevel != null">
+					menu_level = #{item.menuLevel},
+				</if>
+				<if test="item.parentId != null">
+					parent_id = #{item.parentId},
+				</if>
+				<if test="item.sort != null">
+					sort = #{item.sort},
+				</if>
+				<if test="item.utcCreate != null">
+					utc_create = #{item.utcCreate},
+				</if>
+				<if test="item.utcUpdate != null">
+					utc_update = #{item.utcUpdate},
+				</if>
+				<if test="item.status != null">
+					status = #{item.status}
+				</if>
+			</set>
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND role_menu_id = #{item.roleMenuId}
+			</trim>
+         </foreach>  
+	</update>
+	
+	
+	<delete id="remove" parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		delete from
+		<include refid="table" />
+		<include refid="condition" />
+	</delete>
+	<delete id="removeAll">
+		delete from
+		<include refid="table" />
+	</delete>
+	
+	<delete id="delete" parameterType="Long">
+		delete from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</delete>
+	<delete id="deleteByIds" parameterType="list">
+		delete from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</delete>
+	<select id="get" resultMap="sysRoleMenuMap" parameterType="Long">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="load" resultMap="sysRoleMenuMap" parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="getOne" resultMap="sysRoleMenuMap"
+		parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+	<select id="count" resultType="java.lang.Integer"
+		parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		select
+		count(1)
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="countAll" resultType="java.lang.Integer">
+		select
+		count(1)
+		from
+		<include refid="table" />
+	</select>
+
+	<select id="exists" parameterType="Long" resultType="java.lang.Boolean">
+		select
+		1
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+
+	<select id="findAll" resultMap="sysRoleMenuMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+	</select>
+	<select id="find" resultMap="sysRoleMenuMap" parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="sysRoleMenuMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+
+	<select id="findByList" parameterType="java.util.List"
+		resultMap="sysRoleMenuMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</select>
+	
+	<select id="findByCriteria" parameterType="java.util.Map" resultMap="sysRoleMenuMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	<select id="queryByCriteria" parameterType="java.util.Map" resultMap="sysRoleMenuMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="queryByMap" parameterType="java.util.Map" resultMap="sysRoleMenuMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="query" resultMap="sysRoleMenuMap" parameterType="cn.gtms.admin.entity.SysRoleMenu">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+</mapper>

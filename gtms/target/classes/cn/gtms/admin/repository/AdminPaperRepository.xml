@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gtms.admin.repository.AdminPaperRepository">
+
+
+	<resultMap id="adminPaperMap" type="cn.gtms.admin.entity.AdminPaper">
+		<id column="paper_id" property="paperId" />		<!-- 论文id -->
+		<result column="paper_title" property="paperTitle" />		<!-- 论文题目 -->
+		<result column="limit_account" property="limitAccount" />		<!-- 限选人数 -->
+		<result column="paper_type" property="paperType" />		<!-- 选题类型（论文/设计） -->
+		<result column="paper_describtion" property="paperDescribtion" />		<!-- 题目描述 -->
+		<result column="document_id" property="documentId" />		<!-- 附件id -->
+		<result column="create_by" property="createBy" />		<!-- 创建人 -->
+		<result column="is_student_create" property="isStudentCreate" />		<!-- 是否自拟 -->
+		<result column="utc_create" property="utcCreate" />		<!-- 创建时间 -->
+		<result column="utc_update" property="utcUpdate" />		<!-- 更新时间 -->
+		<result column="status" property="status" />		<!-- 状态 -->
+		<result column="teacher_id" property="teacherId" />		<!-- 教师id -->
+	</resultMap>
+	<sql id="allColumns">
+		paper_id,paper_title,limit_account,paper_type,paper_describtion,document_id,create_by,is_student_create,utc_create,utc_update,status,
+		teacher_id
+	</sql>
+	<sql id="columns">
+		paper_title,limit_account,paper_type,paper_describtion,document_id,create_by,is_student_create,utc_create,utc_update,status,
+		teacher_id
+	</sql>
+	<sql id="table">
+		gtms_admin_paper 
+	</sql>
+	<sql id="condition">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="paperId != null">
+				AND paper_id = #{paperId}
+			</if>
+			<if test="paperTitle != null">
+				AND paper_title = #{paperTitle}
+			</if>
+			<if test="limitAccount != null">
+				AND limit_account = #{limitAccount}
+			</if>
+			<if test="paperType != null">
+				AND paper_type = #{paperType}
+			</if>
+			<if test="paperDescribtion != null">
+				AND paper_describtion = #{paperDescribtion}
+			</if>
+			<if test="documentId != null">
+				AND document_id = #{documentId}
+			</if>
+			<if test="createBy != null">
+				AND create_by = #{createBy}
+			</if>
+			<if test="isStudentCreate != null">
+				AND is_student_create = #{isStudentCreate}
+			</if>
+			<if test="utcCreate != null">
+				AND utc_create = #{utcCreate}
+			</if>
+			<if test="utcUpdate != null">
+				AND utc_update = #{utcUpdate}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+			<if test="teacherId != null">
+				AND teacher_id = #{teacherId}
+			</if>
+		</trim>
+	</sql>
+	<sql id="conditionPK">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND paper_id = #{paperId}
+		</trim>
+	</sql>
+	<sql id="moreConditionPK">
+		WHERE paper_id in
+		<trim prefix="(" suffix=")">
+			<foreach collection="ids" item="item" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminPaper" databaseId="oracle">
+		insert into
+		<include refid="table" />
+		(<include refid="allColumns" />)
+		values
+		(#{paperId},#{paperTitle,jdbcType=VARCHAR},#{limitAccount,jdbcType=NUMERIC},#{paperType,jdbcType=VARCHAR},#{paperDescribtion,jdbcType=VARCHAR},
+		#{documentId,jdbcType=NUMERIC},#{createBy,jdbcType=NUMERIC},#{isStudentCreate,jdbcType=VARCHAR},#{utcCreate,jdbcType=TIMESTAMP},
+		#{utcUpdate,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR},#{teacherId,jdbcType=NUMERIC}
+		)
+		<selectKey keyProperty="paperId" order="BEFORE" resultType="java.lang.Long">
+			select
+			seq_gtms_admin_paper_id.nextval
+			from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminPaper" useGeneratedKeys="true"  keyProperty="paperId" >
+		insert into
+		<include refid="table" />
+		(<include refid="columns" />)
+		values
+		(#{paperTitle,jdbcType=VARCHAR},#{limitAccount,jdbcType=NUMERIC},#{paperType,jdbcType=VARCHAR},#{paperDescribtion,jdbcType=VARCHAR},
+		#{documentId,jdbcType=NUMERIC},#{createBy,jdbcType=NUMERIC},#{isStudentCreate,jdbcType=VARCHAR},#{utcCreate,jdbcType=TIMESTAMP},
+		#{utcUpdate,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR},#{teacherId,jdbcType=NUMERIC}
+		)
+	</insert>
+	
+	<insert id="saveList" parameterType="java.util.List">
+		insert into
+		<include refid="table" />
+		(
+		<include refid="columns" />
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">	
+		(#{item.paperTitle,jdbcType=VARCHAR},#{item.limitAccount,jdbcType=NUMERIC},#{item.paperType,jdbcType=VARCHAR},#{item.paperDescribtion,jdbcType=VARCHAR},
+		#{item.documentId,jdbcType=NUMERIC},#{item.createBy,jdbcType=NUMERIC},#{item.isStudentCreate,jdbcType=VARCHAR},#{item.utcCreate,jdbcType=TIMESTAMP},
+		#{item.utcUpdate,jdbcType=TIMESTAMP},#{item.status,jdbcType=VARCHAR},#{item.teacherId,jdbcType=NUMERIC}
+		)
+		</foreach>
+	</insert>
+	
+	
+	<update id="update" parameterType="cn.gtms.admin.entity.AdminPaper">
+		update
+		<include refid="table" />
+		<set>
+			<if test="paperTitle != null">
+				paper_title = #{paperTitle},
+			</if>
+			<if test="limitAccount != null">
+				limit_account = #{limitAccount},
+			</if>
+			<if test="paperType != null">
+				paper_type = #{paperType},
+			</if>
+			<if test="paperDescribtion != null">
+				paper_describtion = #{paperDescribtion},
+			</if>
+			<if test="documentId != null">
+				document_id = #{documentId},
+			</if>
+			<if test="createBy != null">
+				create_by = #{createBy},
+			</if>
+			<if test="isStudentCreate != null">
+				is_student_create = #{isStudentCreate},
+			</if>
+			<if test="utcCreate != null">
+				utc_create = #{utcCreate},
+			</if>
+			<if test="utcUpdate != null">
+				utc_update = #{utcUpdate},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="teacherId != null">
+				teacher_id = #{teacherId},
+			</if>
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateAll" parameterType="cn.gtms.admin.entity.AdminPaper">
+		update
+		<include refid="table" />
+		<set>
+			paper_title = #{paperTitle},
+			limit_account = #{limitAccount},
+			paper_type = #{paperType},
+			paper_describtion = #{paperDescribtion},
+			document_id = #{documentId},
+			create_by = #{createBy},
+			is_student_create = #{isStudentCreate},
+			utc_create = #{utcCreate},
+			utc_update = #{utcUpdate},
+			status = #{status},
+			teacher_id = #{teacherId}
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+         update
+         	<include refid="table" />
+			<set>
+				<if test="item.paperTitle != null">
+					paper_title = #{item.paperTitle},
+				</if>
+				<if test="item.limitAccount != null">
+					limit_account = #{item.limitAccount},
+				</if>
+				<if test="item.paperType != null">
+					paper_type = #{item.paperType},
+				</if>
+				<if test="item.paperDescribtion != null">
+					paper_describtion = #{item.paperDescribtion},
+				</if>
+				<if test="item.documentId != null">
+					document_id = #{item.documentId},
+				</if>
+				<if test="item.createBy != null">
+					create_by = #{item.createBy},
+				</if>
+				<if test="item.isStudentCreate != null">
+					is_student_create = #{item.isStudentCreate},
+				</if>
+				<if test="item.utcCreate != null">
+					utc_create = #{item.utcCreate},
+				</if>
+				<if test="item.utcUpdate != null">
+					utc_update = #{item.utcUpdate},
+				</if>
+				<if test="item.status != null">
+					status = #{item.status},
+				</if>
+				<if test="item.teacherId != null">
+					teacher_id = #{item.teacherId}
+				</if>
+			</set>
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND paper_id = #{item.paperId}
+			</trim>
+         </foreach>  
+	</update>
+	
+	
+	<delete id="remove" parameterType="cn.gtms.admin.entity.AdminPaper">
+		delete from
+		<include refid="table" />
+		<include refid="condition" />
+	</delete>
+	<delete id="removeAll">
+		delete from
+		<include refid="table" />
+	</delete>
+	
+	<delete id="delete" parameterType="Long">
+		delete from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</delete>
+	<delete id="deleteByIds" parameterType="list">
+		delete from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</delete>
+	<select id="get" resultMap="adminPaperMap" parameterType="Long">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="load" resultMap="adminPaperMap" parameterType="cn.gtms.admin.entity.AdminPaper">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="getOne" resultMap="adminPaperMap"
+		parameterType="cn.gtms.admin.entity.AdminPaper">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+	<select id="count" resultType="java.lang.Integer"
+		parameterType="cn.gtms.admin.entity.AdminPaper">
+		select
+		count(1)
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="countAll" resultType="java.lang.Integer">
+		select
+		count(1)
+		from
+		<include refid="table" />
+	</select>
+
+	<select id="exists" parameterType="Long" resultType="java.lang.Boolean">
+		select
+		1
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+
+	<select id="findAll" resultMap="adminPaperMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+	</select>
+	<select id="find" resultMap="adminPaperMap" parameterType="cn.gtms.admin.entity.AdminPaper">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="adminPaperMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+
+	<select id="findByList" parameterType="java.util.List"
+		resultMap="adminPaperMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</select>
+	
+	<select id="findByCriteria" parameterType="java.util.Map" resultMap="adminPaperMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	<select id="queryByCriteria" parameterType="java.util.Map" resultMap="adminPaperMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="queryByMap" parameterType="java.util.Map" resultMap="adminPaperMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="query" resultMap="adminPaperMap" parameterType="cn.gtms.admin.entity.AdminPaper">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+</mapper>

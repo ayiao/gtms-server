@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gtms.admin.repository.AdminNoticeRepository">
+
+
+	<resultMap id="adminNoticeMap" type="cn.gtms.admin.entity.AdminNotice">
+		<id column="notice_id" property="noticeId" />		<!-- 公告id -->
+		<result column="notice_title" property="noticeTitle" />		<!-- 公告标题 -->
+		<result column="notice_description" property="noticeDescription" />		<!-- 公告内容 -->
+		<result column="document_id" property="documentId" />		<!-- 附件id -->
+		<result column="create_by" property="createBy" />		<!-- 创建人 -->
+		<result column="utc_create" property="utcCreate" />		<!-- 创建时间 -->
+		<result column="update_by" property="updateBy" />		<!-- 更新人 -->
+		<result column="utc_update" property="utcUpdate" />		<!-- 更新时间 -->
+		<result column="status" property="status" />		<!-- 状态 -->
+		<result column="valid_from" property="validFrom" />		<!-- 开始有效时间 -->
+		<result column="valid_to" property="validTo" />		<!-- 截止有效时间 -->
+		<result column="college" property="college" />		<!-- 学院 -->
+	</resultMap>
+	<sql id="allColumns">
+		notice_id,notice_title,notice_description,document_id,create_by,utc_create,update_by,utc_update,status,valid_from,valid_to,
+		college
+	</sql>
+	<sql id="columns">
+		notice_title,notice_description,document_id,create_by,utc_create,update_by,utc_update,status,valid_from,valid_to,
+		college
+	</sql>
+	<sql id="table">
+		gtm_admin_notice 
+	</sql>
+	<sql id="condition">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="noticeId != null">
+				AND notice_id = #{noticeId}
+			</if>
+			<if test="noticeTitle != null">
+				AND notice_title = #{noticeTitle}
+			</if>
+			<if test="noticeDescription != null">
+				AND notice_description = #{noticeDescription}
+			</if>
+			<if test="documentId != null">
+				AND document_id = #{documentId}
+			</if>
+			<if test="createBy != null">
+				AND create_by = #{createBy}
+			</if>
+			<if test="utcCreate != null">
+				AND utc_create = #{utcCreate}
+			</if>
+			<if test="updateBy != null">
+				AND update_by = #{updateBy}
+			</if>
+			<if test="utcUpdate != null">
+				AND utc_update = #{utcUpdate}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+			<if test="validFrom != null">
+				AND valid_from = #{validFrom}
+			</if>
+			<if test="validTo != null">
+				AND valid_to = #{validTo}
+			</if>
+			<if test="college != null">
+				AND college = #{college}
+			</if>
+		</trim>
+	</sql>
+	<sql id="conditionPK">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND notice_id = #{noticeId}
+		</trim>
+	</sql>
+	<sql id="moreConditionPK">
+		WHERE notice_id in
+		<trim prefix="(" suffix=")">
+			<foreach collection="ids" item="item" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminNotice" databaseId="oracle">
+		insert into
+		<include refid="table" />
+		(<include refid="allColumns" />)
+		values
+		(#{noticeId},#{noticeTitle,jdbcType=VARCHAR},#{noticeDescription,jdbcType=VARCHAR},#{documentId,jdbcType=NUMERIC},#{createBy,jdbcType=NUMERIC},
+		#{utcCreate,jdbcType=TIMESTAMP},#{updateBy,jdbcType=NUMERIC},#{utcUpdate,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR},
+		#{validFrom,jdbcType=TIMESTAMP},#{validTo,jdbcType=TIMESTAMP},#{college,jdbcType=VARCHAR}
+		)
+		<selectKey keyProperty="noticeId" order="BEFORE" resultType="java.lang.Long">
+			select
+			seq_gtm_admin_notice_id.nextval
+			from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="save" parameterType="cn.gtms.admin.entity.AdminNotice" useGeneratedKeys="true"  keyProperty="noticeId" >
+		insert into
+		<include refid="table" />
+		(<include refid="columns" />)
+		values
+		(#{noticeTitle,jdbcType=VARCHAR},#{noticeDescription,jdbcType=VARCHAR},#{documentId,jdbcType=NUMERIC},#{createBy,jdbcType=NUMERIC},
+		#{utcCreate,jdbcType=TIMESTAMP},#{updateBy,jdbcType=NUMERIC},#{utcUpdate,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR},
+		#{validFrom,jdbcType=TIMESTAMP},#{validTo,jdbcType=TIMESTAMP},#{college,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="saveList" parameterType="java.util.List">
+		insert into
+		<include refid="table" />
+		(
+		<include refid="columns" />
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">	
+		(#{item.noticeTitle,jdbcType=VARCHAR},#{item.noticeDescription,jdbcType=VARCHAR},#{item.documentId,jdbcType=NUMERIC},#{item.createBy,jdbcType=NUMERIC},
+		#{item.utcCreate,jdbcType=TIMESTAMP},#{item.updateBy,jdbcType=NUMERIC},#{item.utcUpdate,jdbcType=TIMESTAMP},#{item.status,jdbcType=VARCHAR},
+		#{item.validFrom,jdbcType=TIMESTAMP},#{item.validTo,jdbcType=TIMESTAMP},#{item.college,jdbcType=VARCHAR}
+		)
+		</foreach>
+	</insert>
+	
+	
+	<update id="update" parameterType="cn.gtms.admin.entity.AdminNotice">
+		update
+		<include refid="table" />
+		<set>
+			<if test="noticeTitle != null">
+				notice_title = #{noticeTitle},
+			</if>
+			<if test="noticeDescription != null">
+				notice_description = #{noticeDescription},
+			</if>
+			<if test="documentId != null">
+				document_id = #{documentId},
+			</if>
+			<if test="createBy != null">
+				create_by = #{createBy},
+			</if>
+			<if test="utcCreate != null">
+				utc_create = #{utcCreate},
+			</if>
+			<if test="updateBy != null">
+				update_by = #{updateBy},
+			</if>
+			<if test="utcUpdate != null">
+				utc_update = #{utcUpdate},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="validFrom != null">
+				valid_from = #{validFrom},
+			</if>
+			<if test="validTo != null">
+				valid_to = #{validTo},
+			</if>
+			<if test="college != null">
+				college = #{college},
+			</if>
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateAll" parameterType="cn.gtms.admin.entity.AdminNotice">
+		update
+		<include refid="table" />
+		<set>
+			notice_title = #{noticeTitle},
+			notice_description = #{noticeDescription},
+			document_id = #{documentId},
+			create_by = #{createBy},
+			utc_create = #{utcCreate},
+			update_by = #{updateBy},
+			utc_update = #{utcUpdate},
+			status = #{status},
+			valid_from = #{validFrom},
+			valid_to = #{validTo},
+			college = #{college}
+		</set>
+		<include refid="conditionPK" />
+	</update>
+	
+	<update id="updateList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+         update
+         	<include refid="table" />
+			<set>
+				<if test="item.noticeTitle != null">
+					notice_title = #{item.noticeTitle},
+				</if>
+				<if test="item.noticeDescription != null">
+					notice_description = #{item.noticeDescription},
+				</if>
+				<if test="item.documentId != null">
+					document_id = #{item.documentId},
+				</if>
+				<if test="item.createBy != null">
+					create_by = #{item.createBy},
+				</if>
+				<if test="item.utcCreate != null">
+					utc_create = #{item.utcCreate},
+				</if>
+				<if test="item.updateBy != null">
+					update_by = #{item.updateBy},
+				</if>
+				<if test="item.utcUpdate != null">
+					utc_update = #{item.utcUpdate},
+				</if>
+				<if test="item.status != null">
+					status = #{item.status},
+				</if>
+				<if test="item.validFrom != null">
+					valid_from = #{item.validFrom},
+				</if>
+				<if test="item.validTo != null">
+					valid_to = #{item.validTo},
+				</if>
+				<if test="item.college != null">
+					college = #{item.college}
+				</if>
+			</set>
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				AND notice_id = #{item.noticeId}
+			</trim>
+         </foreach>  
+	</update>
+	
+	
+	<delete id="remove" parameterType="cn.gtms.admin.entity.AdminNotice">
+		delete from
+		<include refid="table" />
+		<include refid="condition" />
+	</delete>
+	<delete id="removeAll">
+		delete from
+		<include refid="table" />
+	</delete>
+	
+	<delete id="delete" parameterType="Long">
+		delete from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</delete>
+	<delete id="deleteByIds" parameterType="list">
+		delete from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</delete>
+	<select id="get" resultMap="adminNoticeMap" parameterType="Long">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="load" resultMap="adminNoticeMap" parameterType="cn.gtms.admin.entity.AdminNotice">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+	<select id="getOne" resultMap="adminNoticeMap"
+		parameterType="cn.gtms.admin.entity.AdminNotice">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+	<select id="count" resultType="java.lang.Integer"
+		parameterType="cn.gtms.admin.entity.AdminNotice">
+		select
+		count(1)
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="countAll" resultType="java.lang.Integer">
+		select
+		count(1)
+		from
+		<include refid="table" />
+	</select>
+
+	<select id="exists" parameterType="Long" resultType="java.lang.Boolean">
+		select
+		1
+		from
+		<include refid="table" />
+		<include refid="conditionPK" />
+	</select>
+
+	<select id="findAll" resultMap="adminNoticeMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+	</select>
+	<select id="find" resultMap="adminNoticeMap" parameterType="cn.gtms.admin.entity.AdminNotice">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="adminNoticeMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+
+	<select id="findByList" parameterType="java.util.List"
+		resultMap="adminNoticeMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="moreConditionPK" />
+	</select>
+	
+	<select id="findByCriteria" parameterType="java.util.Map" resultMap="adminNoticeMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	<select id="queryByCriteria" parameterType="java.util.Map" resultMap="adminNoticeMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="queryByMap" parameterType="java.util.Map" resultMap="adminNoticeMap">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="map.keys" item="key">
+				<if test="map[key] != null and !map[key].equals('')">
+					AND ${key} = #{map[${key}]}
+				</if>
+			</foreach>
+		</trim>
+	</select>
+	
+	<select id="query" resultMap="adminNoticeMap" parameterType="cn.gtms.admin.entity.AdminNotice">
+		select
+		<include refid="allColumns" />
+		from
+		<include refid="table" />
+		<include refid="condition" />
+	</select>
+</mapper>

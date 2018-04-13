@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gtms.admin.repository.AdminPaperExtRepository">
+
+
+	<resultMap id="adminPaperMap" type="cn.gtms.admin.entity.AdminPaperExt">
+		<id column="paper_id" property="paperId" />		<!-- 论文id -->
+		<result column="paper_title" property="paperTitle" />		<!-- 论文题目 -->
+		<result column="limit_account" property="limitAccount" />		<!-- 限选人数 -->
+		<result column="paper_type" property="paperType" />		<!-- 选题类型（论文/设计） -->
+		<result column="paper_describtion" property="paperDescribtion" />		<!-- 题目描述 -->
+		<result column="document_id" property="documentId" />		<!-- 附件id -->
+		<result column="create_by" property="createBy" />		<!-- 创建人 -->
+		<result column="student_create" property="isStudentCreate" />		<!-- 是否自拟 -->
+		<result column="utc_create" property="utcCreate" />		<!-- 创建时间 -->
+		<result column="utc_update" property="utcUpdate" />		<!-- 更新时间 -->
+		<result column="status" property="status" />		<!-- 状态 -->
+		<result column="create_by_name" property="createByName" />		<!-- 状态 -->
+		<result column="teacher_name" property="teacherName" />		<!-- 状态 -->
+		<result column="teacher_id" property="teacherId" />		<!-- 状态 -->
+		<result column="select_by" property="selectBy" />		<!-- 状态 -->
+		<result column="select_by_id" property="selectById" />		<!-- 状态 -->
+		<result column="select_status" property="selectStatus" />		<!-- 状态 -->
+		<result column="user_paper_id" property="userPaperId" />		<!-- 状态 -->
+		<result column="document_id_ext" property="documentIdExt" />		<!-- 状态 -->
+		<result column="document_url" property="documentUrl" />		<!-- 状态 -->
+		<result column="document_status" property="documentStatus" />		<!-- 状态 -->
+		<result column="upload_time" property="uploadTime" />		<!-- 状态 -->
+		<result column="upload_by" property="uploadBy" />		<!-- 状态 -->
+		<result column="document_type" property="documentType" />		<!-- 状态 -->
+		<result column="document_name" property="documentName" />		<!-- 状态 -->
+		<result column="is_select_by_self" property="isSelectBySelf" />		<!-- 状态 -->
+		<result column="surplus_quota" property="surplusQuota" />		<!-- 状态 -->
+	</resultMap>
+	
+	<select id='queryPaperList' resultMap="adminPaperMap"
+		parameterType="java.util.Map">
+		select * from (
+				SELECT 
+		    t0.*,
+		    t1.user_name  create_by_name,
+		    if(t1.role='2','是','否') student_create,
+		    (select user_name from gtms_admin_user where t0.teacher_id=user_id) teacher_name,
+			group_concat((select user_name from gtms_admin_user where t2.user_id=user_id))	 select_by,
+		    if( (select count(*) from 
+		    	gtms_admin_user_paper where user_id=#{map.userId} and paper_id =t0.paper_id)=1,'YES','NO')	is_select_by_self,
+		    t2.status select_status,
+		    (t0.limit_account-(select count(*) from gtms_admin_user_paper where paper_id=t0.paper_id)) surplus_quota,
+		    t2.user_paper_id
+		FROM
+		    gtms.gtms_admin_paper t0 
+			    left join gtms_admin_user t1 on t0.create_by=t1.user_id 
+			    <choose>
+			    	<when test="map.role==1">
+				    inner join 
+			    	</when>
+			    	<otherwise>
+				    left join 
+			    	</otherwise>
+			    </choose>
+			    gtms_admin_user_paper t2 on t0.paper_id=t2.paper_id
+		    <choose>
+		    	<when test="map.role==1">
+		    		group by paper_id,user_paper_id
+		    	</when>
+		    	<otherwise>
+				    group by paper_id
+		    	</otherwise>
+		    </choose>
+	    )a
+	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	
+	<select id='queryPaperDocumentList' resultMap="adminPaperMap"
+		parameterType="java.util.Map">
+		select * from (
+			SELECT 
+	    t0.*,
+	    t1.user_name  create_by_name,
+	    if(t1.role='2','是','否') student_create,
+	    (select user_name from gtms_admin_user where t0.teacher_id=user_id) teacher_name,
+	    (select user_name from gtms_admin_user where t2.user_id=user_id) select_by,
+	    t2.user_id select_by_id,
+	    t2.status select_status,
+	    t2.user_paper_id,
+	    t3.document_id document_id_ext,
+	    t3.document_url,
+	    t3.document_type,
+	    t3.document_name,
+	    t3.status document_status,
+	    t3.utc_create upload_time,
+	    (select user_name from gtms_admin_user where t3.upload_by=user_id) upload_by
+	FROM
+	    gtms.gtms_admin_paper t0 
+	    left join gtms_admin_user t1 on t0.create_by=t1.user_id 
+	    inner join gtms_admin_user_paper t2 on t0.paper_id=t2.paper_id
+	    left join gtms_admin_document t3 on t3.relate_to=t0.paper_id and (t2.user_id=t3.belong_to or t2.user_id=t3.upload_by or t3.upload_by=t0.teacher_id)
+	where
+		<choose>
+			<when test="map.role==1">
+		    t3.belong_to=#{map.userId}
+		    or t3.upload_by=#{map.userId}
+			</when>
+			<otherwise>
+			t2.status=1
+			and t2.user_id=#{map.userId}
+			</otherwise>
+		</choose>
+	    )a
+	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<foreach collection="list" item="item" index="index">
+				<choose> 
+					<when test="item.op == 'in'">
+						AND ${item.field} ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<when test="item.op == 'not in'">
+						AND ifnull(${item.field},'-linkgoo') ${item.op}
+						<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+							#{list[${index}].value[${idx}]}
+			        	</foreach>
+					</when>
+					<otherwise>
+						AND ${item.field} ${item.op} #{list[${index}].value}
+					</otherwise> 
+				</choose>
+			</foreach>
+		</trim>
+	</select>
+	
+	
+	<select id="queryAdminPaper" resultMap="adminPaperMap"
+		parameterType="java.util.Map">
+		select 
+			* from 
+		gtms_admin_paper
+		where 1=1
+		<choose>
+			<when test="map.role==1">
+				and teacher_id=#{map.userId}
+			</when>
+			<when test="map.role==2">
+				and create_by=#{map.userId}
+			</when>
+			<otherwise>
+			
+			</otherwise>
+		</choose>
+		<trim >
+				<foreach collection="list" item="item" index="index">
+					<choose> 
+						<when test="item.op == 'in'">
+							AND ${item.field} ${item.op}
+							<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+								#{list[${index}].value[${idx}]}
+				        	</foreach>
+						</when>
+						<when test="item.op == 'not in'">
+							AND ifnull(${item.field},'-linkgoo') ${item.op}
+							<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+								#{list[${index}].value[${idx}]}
+				        	</foreach>
+						</when>
+						<otherwise>
+							AND ${item.field} ${item.op} #{list[${index}].value}
+						</otherwise> 
+					</choose>
+				</foreach>
+			</trim>
+	
+	</select>
+	
+	<select id="queryUserPaper" resultMap="adminPaperMap"
+		parameterType="java.util.Map">
+		select * from (
+			select 
+				t0.*,
+				t2.status select_status 
+			from 
+			gtms_admin_paper t0 inner join gtms_admin_user t1 on t0.create_by=t1.user_id 
+		    inner join gtms_admin_user_paper t2 on t0.paper_id=t2.paper_id
+			where 1=1
+				and t2.user_id=#{map.userId}
+			)a
+		<trim >
+				<foreach collection="list" item="item" index="index">
+					<choose> 
+						<when test="item.op == 'in'">
+							AND ${item.field} ${item.op}
+							<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+								#{list[${index}].value[${idx}]}
+				        	</foreach>
+						</when>
+						<when test="item.op == 'not in'">
+							AND ifnull(${item.field},'-linkgoo') ${item.op}
+							<foreach item="obj" collection="item.value" index="idx" open="(" separator="," close=")">
+								#{list[${index}].value[${idx}]}
+				        	</foreach>
+						</when>
+						<otherwise>
+							AND ${item.field} ${item.op} #{list[${index}].value}
+						</otherwise> 
+					</choose>
+				</foreach>
+			</trim>
+	
+	</select>
+</mapper>
